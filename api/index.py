@@ -1,92 +1,94 @@
 """
 Vercel serverless function entry point for Django
+All Django imports are done inside the handler to avoid confusing Vercel's runtime introspection
 """
 import os
 import sys
 from pathlib import Path
 from io import BytesIO
 
-# Add the project root to Python path
+# Minimal setup - no Django imports at module level
 BASE_DIR = Path(__file__).resolve().parent.parent
-sys.path.insert(0, str(BASE_DIR))
+if str(BASE_DIR) not in sys.path:
+    sys.path.insert(0, str(BASE_DIR))
 
-# Set environment variable to indicate we're on Vercel
+# Environment setup
 os.environ['VERCEL'] = '1'
-
-# Set Django settings module
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'portfolio.settings')
 
-# Import and initialize Django WSGI application
-try:
-    from django.core.wsgi import get_wsgi_application
-    django_app = get_wsgi_application()
-except Exception as e:
-    # If Django initialization fails, we'll handle it in the handler
-    django_app = None
-    init_error = str(e)
+# Global cache for Django app
+_django_app = None
+_django_error = None
 
 def handler(request):
     """
-    Vercel serverless function handler for Django
+    Vercel serverless function handler
     
-    This function adapts Vercel's Request/Response API to Django's WSGI interface.
+    Keep this function completely clean - all Django code is inside
+    to prevent Vercel's runtime from getting confused during introspection.
     """
-    # Check if Django app initialized successfully
-    if django_app is None:
+    global _django_app, _django_error
+    
+    # Initialize Django app on first call (lazy loading)
+    if _django_app is None and _django_error is None:
+        try:
+            from django.core.wsgi import get_wsgi_application
+            _django_app = get_wsgi_application()
+        except Exception as e:
+            import traceback
+            _django_error = {
+                'message': str(e),
+                'traceback': traceback.format_exc()
+            }
+    
+    # Return error if initialization failed
+    if _django_error:
         return {
             'statusCode': 500,
-            'headers': {'Content-Type': 'text/plain'},
-            'body': f'Django initialization error: {init_error}'
+            'headers': {'Content-Type': 'text/plain; charset=utf-8'},
+            'body': f"Django Initialization Error:\n{_django_error['message']}\n\n{_django_error['traceback']}"
         }
     
     try:
-        # Extract request information
-        # Vercel's Request object structure may vary, so we handle multiple cases
+        # Extract request data
         method = getattr(request, 'method', 'GET')
         
-        # Get path - handle both 'path' and 'url' attributes
-        if hasattr(request, 'path'):
-            path = request.path
-        elif hasattr(request, 'url'):
-            # Extract path from URL
-            url = request.url
-            if '?' in url:
-                path = url.split('?')[0]
-            else:
-                path = url
-        else:
-            path = '/'
+        # Get path
+        path = getattr(request, 'path', None)
+        if not path:
+            url = getattr(request, 'url', '/')
+            path = url.split('?')[0] if '?' in url else url
         
         # Get query string
+        query_string = ''
         if hasattr(request, 'query_string'):
             query_string = request.query_string or ''
         elif hasattr(request, 'query'):
-            query = request.query or {}
-            if isinstance(query, dict):
-                query_string = '&'.join([f'{k}={v}' for k, v in query.items()])
-            else:
-                query_string = str(query)
-        else:
-            query_string = ''
+            q = getattr(request, 'query', {})
+            if isinstance(q, dict):
+                query_string = '&'.join(f'{k}={v}' for k, v in q.items() if v)
+            elif q:
+                query_string = str(q)
         
         # Get headers
+        headers = {}
         if hasattr(request, 'headers'):
-            headers = dict(request.headers) if request.headers else {}
-        else:
-            headers = {}
+            h = request.headers
+            if h:
+                headers = dict(h) if not isinstance(h, dict) else h
         
-        # Get request body
+        # Get body
         body = b''
         if hasattr(request, 'body'):
-            body_data = request.body
-            if isinstance(body_data, str):
-                body = body_data.encode('utf-8')
-            elif isinstance(body_data, bytes):
-                body = body_data
-            elif body_data is not None:
-                body = str(body_data).encode('utf-8')
+            b = request.body
+            if isinstance(b, str):
+                body = b.encode('utf-8')
+            elif isinstance(b, bytes):
+                body = b
+            elif b is not None:
+                body = str(b).encode('utf-8')
         
-        # Build WSGI environ dictionary
+        # Build WSGI environ
         host = headers.get('host', 'localhost')
         scheme = headers.get('x-forwarded-proto', 'https')
         
@@ -97,7 +99,7 @@ def handler(request):
             'SCRIPT_NAME': '',
             'CONTENT_TYPE': headers.get('content-type', ''),
             'CONTENT_LENGTH': str(len(body)),
-            'SERVER_NAME': host.split(':')[0] if ':' in host else host,
+            'SERVER_NAME': host.split(':')[0],
             'SERVER_PORT': host.split(':')[1] if ':' in host else '80',
             'wsgi.version': (1, 0),
             'wsgi.url_scheme': scheme,
@@ -108,59 +110,41 @@ def handler(request):
             'wsgi.run_once': False,
         }
         
-        # Add HTTP headers to environ
+        # Add HTTP headers
         for key, value in headers.items():
-            key_upper = key.upper().replace('-', '_')
-            if key_upper not in ('CONTENT_TYPE', 'CONTENT_LENGTH', 'HOST'):
-                environ[f'HTTP_{key_upper}'] = value
+            env_key = key.upper().replace('-', '_')
+            if env_key not in ('CONTENT_TYPE', 'CONTENT_LENGTH', 'HOST'):
+                environ[f'HTTP_{env_key}'] = value
         
-        # Response containers for WSGI start_response callback
+        # WSGI response
         status_code = [200]
         response_headers = []
         
-        def start_response(status_line, headers):
+        def start_response(status_line, headers_list):
             status_code[0] = int(status_line.split()[0])
-            response_headers[:] = headers
+            response_headers[:] = headers_list
         
-        # Process request through Django WSGI application
-        response_body = django_app(environ, start_response)
-        body_content = b''.join(response_body).decode('utf-8', errors='ignore')
+        # Call Django
+        response_iter = _django_app(environ, start_response)
+        response_body = b''.join(response_iter)
         
-        # Convert WSGI headers to dict
-        headers_dict = dict(response_headers)
-        
-        # Return response in Vercel's expected format
-        # Try to use Response object if available, otherwise return dict
+        # Decode response
         try:
-            from vercel import Response
-            return Response(
-                body_content,
-                status=status_code[0],
-                headers=headers_dict
-            )
-        except ImportError:
-            # Fallback: return dict format (some Vercel runtimes accept this)
-            return {
-                'statusCode': status_code[0],
-                'headers': headers_dict,
-                'body': body_content
-            }
+            body_text = response_body.decode('utf-8')
+        except UnicodeDecodeError:
+            body_text = response_body.decode('utf-8', errors='replace')
+        
+        # Return Vercel response
+        return {
+            'statusCode': status_code[0],
+            'headers': dict(response_headers),
+            'body': body_text
+        }
         
     except Exception as e:
         import traceback
-        error_msg = f'Error: {str(e)}\n{traceback.format_exc()}'
-        
-        # Try to return proper Response object, otherwise use dict
-        try:
-            from vercel import Response
-            return Response(
-                error_msg,
-                status=500,
-                headers={'Content-Type': 'text/plain'}
-            )
-        except ImportError:
-            return {
-                'statusCode': 500,
-                'headers': {'Content-Type': 'text/plain'},
-                'body': error_msg
-            }
+        return {
+            'statusCode': 500,
+            'headers': {'Content-Type': 'text/plain; charset=utf-8'},
+            'body': f"Request Processing Error:\n{str(e)}\n\n{traceback.format_exc()}"
+        }

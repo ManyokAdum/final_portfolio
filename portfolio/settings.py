@@ -23,9 +23,16 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-^x!2osix1v-uozxw)+t%b=k&i&txgfx94loe$w^%fi0tph(6&_'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+# Check if running on Vercel
+import os
+VERCEL = os.environ.get('VERCEL', '0') == '1'
+DEBUG = not VERCEL  # Disable debug on Vercel
 
-ALLOWED_HOSTS = []
+# Allow all hosts on Vercel, or specific hosts in development
+if VERCEL:
+    ALLOWED_HOSTS = ['*']  # Vercel handles host validation
+else:
+    ALLOWED_HOSTS = ['localhost', '127.0.0.1']
 
 
 # Application definition
@@ -120,6 +127,10 @@ STATIC_URL = '/static/'
 STATICFILES_DIRS = [
     BASE_DIR / 'portfolio' / 'core' / 'static',
 ]
+
+# Static files root for production (Vercel)
+if VERCEL:
+    STATIC_ROOT = BASE_DIR / 'staticfiles'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field

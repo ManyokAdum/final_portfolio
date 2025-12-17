@@ -515,6 +515,12 @@ body.light-theme .hero-image img {
     box-shadow: 0 10px 40px rgba(99, 102, 241, 0.2);
 }
 
+/* Smaller hero image when sidebar is collapsed */
+.sidebar.collapsed ~ .main-content .hero-image img {
+    width: 220px;
+    min-height: 250px;
+}
+
 @keyframes float {
     0%, 100% {
         transform: translateY(0);

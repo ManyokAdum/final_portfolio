@@ -29,3 +29,5 @@ If you don't have images ready, you can use placeholder services like:
 
 Replace these placeholder images with your actual project screenshots and profile photo before deploying to production.
 
+
+

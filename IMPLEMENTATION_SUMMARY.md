@@ -291,7 +291,7 @@ Root/
 
 ## 🎉 Summary
 
-Your portfolio website is **fully functional** and ready to use! It matches the design and functionality of the reference site at https://my-portfolio-psi-one-13.vercel.app/ with a clean Django implementation.
+Your portfolio website is **fully functional** and ready to use! It's built with a clean Django implementation.
 
 **Current Status**: ✅ COMPLETE AND RUNNING
 
@@ -309,4 +309,6 @@ If you need to make any changes or have questions:
 3. Refer to Django documentation for advanced features
 
 **Enjoy your new portfolio website! 🚀**
+
+
 

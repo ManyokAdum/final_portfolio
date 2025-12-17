@@ -25,7 +25,8 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-^x!2osix1v-uozxw)+t%b=k&i&txgfx94loe$w^%fi0tph(6&_')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.environ.get('DEBUG', 'False') == 'True'
+# For local development, default to True. On Render, set DEBUG=False in environment variables.
+DEBUG = os.environ.get('DEBUG', 'True') == 'True'
 
 # Configure ALLOWED_HOSTS for Render
 ALLOWED_HOSTS = []
@@ -35,8 +36,8 @@ RENDER_EXTERNAL_HOSTNAME = os.environ.get('RENDER_EXTERNAL_HOSTNAME')
 if RENDER_EXTERNAL_HOSTNAME:
     ALLOWED_HOSTS.append(RENDER_EXTERNAL_HOSTNAME)
 
-# Also allow localhost for development
-if DEBUG:
+# Always allow localhost for local development (when not on Render)
+if not RENDER_EXTERNAL_HOSTNAME:
     ALLOWED_HOSTS.extend(['localhost', '127.0.0.1'])
 
 

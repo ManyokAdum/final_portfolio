@@ -11,6 +11,9 @@
     <!-- Notification Container -->
     <div id="notification-container"></div>
 
+    <!-- Sidebar Overlay (Mobile) -->
+    <div class="sidebar-overlay" id="sidebar-overlay"></div>
+
     <!-- Sidebar -->
     <aside class="sidebar collapsed" id="sidebar">
         <div class="sidebar-content">
@@ -49,6 +52,15 @@
                                 <circle cx="12" cy="7" r="4"></circle>
                             </svg>
                             <span>About</span>
+                        </button>
+                    </li>
+                    <li>
+                        <button onclick="scrollToSection('skills')" class="nav-link">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="16 18 22 12 16 6"></polyline>
+                                <polyline points="8 6 2 12 8 18"></polyline>
+                            </svg>
+                            <span>Skills</span>
                         </button>
                     </li>
                     <li>
@@ -107,6 +119,15 @@
         </div>
     </aside>
 
+    <!-- Mobile Menu Toggle Button -->
+    <button class="mobile-menu-toggle" id="mobile-menu-toggle" aria-label="Toggle menu">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="3" y1="12" x2="21" y2="12"></line>
+            <line x1="3" y1="6" x2="21" y2="6"></line>
+            <line x1="3" y1="18" x2="21" y2="18"></line>
+        </svg>
+    </button>
+
     <!-- Main Content -->
     <main class="main-content">
         <!-- Hero Section -->
@@ -126,10 +147,6 @@
                     <div class="hero-buttons">
                         <button class="btn-primary" onclick="scrollToSection('projects')">
                             View My Work
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <line x1="5" y1="12" x2="19" y2="12"></line>
-                                <polyline points="12 5 19 12 12 19"></polyline>
-                            </svg>
                         </button>
                         <button class="btn-secondary">
                             Download Resume
@@ -246,77 +263,81 @@
                     </div>
                 </div>
             </div>
+        </section>
 
-            <!-- Technical Skills -->
-            <div class="skills-section">
-                <h3>Technical Skills</h3>
-                <div class="skills-grid">
-                    <div class="skill-category">
-                        <h4>Frontend</h4>
-                        <ul>
-                            <li>React</li>
-                            <li>JavaScript/TypeScript</li>
-                            <li>HTML5/CSS3</li>
-                            <li>Tailwind CSS</li>
-                            <li>Vue.js</li>
-                        </ul>
-                    </div>
-                    <div class="skill-category">
-                        <h4>Backend</h4>
-                        <ul>
-                            <li>Java</li>
-                            <li>Spring Boot</li>
-                            <li>Node.js</li>
-                            <li>Python</li>
-                            <li>Django</li>
-                            <li>REST APIs</li>
-                        </ul>
-                    </div>
-                    <div class="skill-category">
-                        <h4>Mobile</h4>
-                        <ul>
-                            <li>Flutter</li>
-                            <li>Dart</li>
-                            <li>Android Development</li>
-                            <li>iOS Development</li>
-                            <li>Cross-platform</li>
-                        </ul>
-                    </div>
-                    <div class="skill-category">
-                        <h4>Database</h4>
-                        <ul>
-                            <li>PostgreSQL</li>
-                            <li>MySQL</li>
-                            <li>MongoDB</li>
-                            <li>Firebase</li>
-                            <li>Database Design</li>
-                        </ul>
-                    </div>
-                    <div class="skill-category">
-                        <h4>DevOps & Tools</h4>
-                        <ul>
-                            <li>Docker</li>
-                            <li>Git</li>
-                            <li>Linux</li>
-                            <li>AWS</li>
-                            <li>CI/CD</li>
-                            <li>System Administration</li>
-                        </ul>
-                    </div>
-                    <div class="skill-category">
-                        <h4>Security</h4>
-                        <ul>
-                            <li>Network Security</li>
-                            <li>Penetration Testing</li>
-                            <li>Vulnerability Assessment</li>
-                            <li>Compliance</li>
-                        </ul>
-                    </div>
+        <!-- Technical Skills Section -->
+        <section id="skills" class="skills-main-section">
+            <div class="section-header">
+                <h2>Technical Skills</h2>
+                <p>A comprehensive overview of my technical expertise across various domains and technologies</p>
+            </div>
+
+            <div class="skills-grid">
+                <div class="skill-category">
+                    <h4>Frontend</h4>
+                    <ul>
+                        <li>React</li>
+                        <li>JavaScript/TypeScript</li>
+                        <li>HTML5/CSS3</li>
+                        <li>Tailwind CSS</li>
+                        <li>Vue.js</li>
+                    </ul>
+                </div>
+                <div class="skill-category">
+                    <h4>Backend</h4>
+                    <ul>
+                        <li>Java</li>
+                        <li>Spring Boot</li>
+                        <li>Node.js</li>
+                        <li>Python</li>
+                        <li>Django</li>
+                        <li>REST APIs</li>
+                    </ul>
+                </div>
+                <div class="skill-category">
+                    <h4>Mobile</h4>
+                    <ul>
+                        <li>Flutter</li>
+                        <li>Dart</li>
+                        <li>Android Development</li>
+                        <li>iOS Development</li>
+                        <li>Cross-platform</li>
+                    </ul>
+                </div>
+                <div class="skill-category">
+                    <h4>Database</h4>
+                    <ul>
+                        <li>PostgreSQL</li>
+                        <li>MySQL</li>
+                        <li>MongoDB</li>
+                        <li>Firebase</li>
+                        <li>Database Design</li>
+                    </ul>
+                </div>
+                <div class="skill-category">
+                    <h4>DevOps & Tools</h4>
+                    <ul>
+                        <li>Docker</li>
+                        <li>Git</li>
+                        <li>Linux</li>
+                        <li>AWS</li>
+                        <li>CI/CD</li>
+                        <li>System Administration</li>
+                    </ul>
+                </div>
+                <div class="skill-category">
+                    <h4>Security</h4>
+                    <ul>
+                        <li>Network Security</li>
+                        <li>Penetration Testing</li>
+                        <li>Vulnerability Assessment</li>
+                        <li>Compliance</li>
+                    </ul>
                 </div>
             </div>
 
             <!-- Tools & Technologies -->
-            <div class="tools-section">
+            <div class="tools-subsection">
                 <h3>Tools & Technologies</h3>
                 <div class="tools-tags">
                     <span class="tool-tag">IntelliJ IDEA</span>

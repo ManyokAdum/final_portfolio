@@ -67,12 +67,13 @@ if (mobileMenuToggle) {
         if (window.innerWidth <= 968) {
             const isActive = sidebar.classList.toggle('active');
             mobileMenuToggle.classList.toggle('active');
+            mobileMenuToggle.setAttribute('aria-expanded', isActive);
+            mobileMenuToggle.setAttribute('aria-label', isActive ? 'Close menu' : 'Open menu');
             
             if (sidebarOverlay) {
                 sidebarOverlay.classList.toggle('active');
             }
             
-            // Prevent body scroll when sidebar is open
             if (isActive) {
                 document.body.classList.add('sidebar-open');
             } else {
@@ -89,6 +90,8 @@ if (sidebarOverlay) {
             sidebar.classList.remove('active');
             if (mobileMenuToggle) {
                 mobileMenuToggle.classList.remove('active');
+                mobileMenuToggle.setAttribute('aria-expanded', 'false');
+                mobileMenuToggle.setAttribute('aria-label', 'Open menu');
             }
             sidebarOverlay.classList.remove('active');
             document.body.classList.remove('sidebar-open');
@@ -112,20 +115,24 @@ if (sidebar) {
 }
 
 // Close sidebar when clicking outside on mobile
+function closeMobileSidebar() {
+    sidebar.classList.remove('active');
+    if (mobileMenuToggle) {
+        mobileMenuToggle.classList.remove('active');
+        mobileMenuToggle.setAttribute('aria-expanded', 'false');
+        mobileMenuToggle.setAttribute('aria-label', 'Open menu');
+    }
+    if (sidebarOverlay) sidebarOverlay.classList.remove('active');
+    document.body.classList.remove('sidebar-open');
+}
+
 document.addEventListener('click', (e) => {
     if (window.innerWidth <= 968) {
         if (!sidebar.contains(e.target) && 
             !mobileMenuToggle.contains(e.target) && 
             !sidebarOverlay.contains(e.target) &&
             sidebar.classList.contains('active')) {
-            sidebar.classList.remove('active');
-            if (mobileMenuToggle) {
-                mobileMenuToggle.classList.remove('active');
-            }
-            if (sidebarOverlay) {
-                sidebarOverlay.classList.remove('active');
-            }
-            document.body.classList.remove('sidebar-open');
+            closeMobileSidebar();
         }
     }
 });
@@ -133,16 +140,7 @@ document.addEventListener('click', (e) => {
 // Close sidebar when clicking a nav link on mobile
 document.querySelectorAll('.nav-link').forEach(link => {
     link.addEventListener('click', () => {
-        if (window.innerWidth <= 968) {
-            sidebar.classList.remove('active');
-            if (mobileMenuToggle) {
-                mobileMenuToggle.classList.remove('active');
-            }
-            if (sidebarOverlay) {
-                sidebarOverlay.classList.remove('active');
-            }
-            document.body.classList.remove('sidebar-open');
-        }
+        if (window.innerWidth <= 968) closeMobileSidebar();
     });
 });
 
@@ -151,39 +149,21 @@ document.querySelectorAll('.nav-link').forEach(link => {
 // ====================================
 
 const themeToggle = document.getElementById('theme-toggle');
-const moonIcon = document.querySelector('.moon-icon');
-const sunIcon = document.querySelector('.sun-icon');
 let currentTheme = localStorage.getItem('theme') || 'dark';
 
 // Apply saved theme on load (default to dark)
 if (currentTheme === 'light') {
     document.body.classList.add('light-theme');
-    if (moonIcon) moonIcon.style.display = 'none';
-    if (sunIcon) sunIcon.style.display = 'block';
 } else {
-    // Ensure dark theme is default
     document.body.classList.remove('light-theme');
-    if (moonIcon) moonIcon.style.display = 'block';
-    if (sunIcon) sunIcon.style.display = 'none';
     localStorage.setItem('theme', 'dark');
 }
 
 if (themeToggle) {
     themeToggle.addEventListener('click', () => {
         document.body.classList.toggle('light-theme');
-        
-        if (document.body.classList.contains('light-theme')) {
-            currentTheme = 'light';
-            themeToggle.setAttribute('title', 'Switch to Dark Mode');
-            if (moonIcon) moonIcon.style.display = 'none';
-            if (sunIcon) sunIcon.style.display = 'block';
-        } else {
-            currentTheme = 'dark';
-            themeToggle.setAttribute('title', 'Switch to Light Mode');
-            if (moonIcon) moonIcon.style.display = 'block';
-            if (sunIcon) sunIcon.style.display = 'none';
-        }
-        
+        currentTheme = document.body.classList.contains('light-theme') ? 'light' : 'dark';
+        themeToggle.setAttribute('title', currentTheme === 'light' ? 'Switch to Dark Mode' : 'Switch to Light Mode');
         localStorage.setItem('theme', currentTheme);
     });
 }
@@ -401,27 +381,7 @@ let resizeTimer;
 window.addEventListener('resize', () => {
     clearTimeout(resizeTimer);
     resizeTimer = setTimeout(() => {
-        // Close sidebar on resize to desktop
-        if (window.innerWidth > 968) {
-            sidebar.classList.remove('active');
-            if (mobileMenuToggle) {
-                mobileMenuToggle.classList.remove('active');
-            }
-            if (sidebarOverlay) {
-                sidebarOverlay.classList.remove('active');
-            }
-            document.body.classList.remove('sidebar-open');
-        } else {
-            // On mobile, ensure sidebar starts closed
-            sidebar.classList.remove('active');
-            if (mobileMenuToggle) {
-                mobileMenuToggle.classList.remove('active');
-            }
-            if (sidebarOverlay) {
-                sidebarOverlay.classList.remove('active');
-            }
-            document.body.classList.remove('sidebar-open');
-        }
+        closeMobileSidebar();
     }, 250);
 });
 

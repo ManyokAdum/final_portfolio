@@ -25,6 +25,13 @@
     --spacing-lg: 2rem;
     --spacing-xl: 3rem;
     
+    /* Fluid spacing (responsive) */
+    --section-padding: clamp(1.5rem, 4vw, 3rem);
+    --content-max: 1400px;
+    
+    /* Breakpoints (for reference; use in media queries) */
+    /* Small: 576px, Medium: 768px, Large: 992px, XLarge: 1200px, Sidebar break: 969px */
+    
     /* Borders */
     --radius-sm: 0.5rem;
     --radius-md: 0.75rem;
@@ -34,6 +41,9 @@
     --transition-fast: 0.2s ease;
     --transition-medium: 0.3s ease;
     --transition-slow: 0.5s ease;
+    
+    /* Touch target minimum (accessibility) */
+    --touch-target: 44px;
 }
 
 /* Light Theme Override */
@@ -111,7 +121,7 @@ ul {
 }
 
 /* ====================================
-   Sidebar Styles
+   Sidebar Styles (fixed; no layout shift on hover)
    ==================================== */
 .sidebar {
     position: fixed;
@@ -124,7 +134,10 @@ ul {
     display: flex;
     flex-direction: column;
     z-index: 1000;
-    transition: all var(--transition-medium);
+    transition: width var(--transition-medium), transform var(--transition-medium);
+    contain: layout style;
+    will-change: transform;
+    overflow: hidden;
 }
 
 .sidebar.collapsed {
@@ -254,8 +267,11 @@ ul {
 .sidebar-content {
     display: flex;
     flex-direction: column;
+    flex: 1;
+    min-height: 0;
     height: 100%;
     padding: var(--spacing-lg);
+    overflow: hidden;
 }
 
 .sidebar-header {
@@ -314,6 +330,11 @@ ul {
     background-color: var(--hover-bg);
 }
 
+.toggle-sidebar-btn:focus-visible {
+    outline: 2px solid var(--accent-primary);
+    outline-offset: 2px;
+}
+
 .toggle-sidebar-btn svg {
     transition: transform var(--transition-medium);
 }
@@ -356,9 +377,11 @@ ul {
     color: var(--text-muted);
 }
 
-/* Navigation Menu */
+/* Navigation Menu (scrolls if needed so footer stays visible) */
 .nav-menu {
     flex: 1;
+    min-height: 0;
+    overflow-y: auto;
 }
 
 .nav-menu ul {
@@ -385,6 +408,11 @@ ul {
     color: var(--accent-primary);
 }
 
+.nav-link:focus-visible {
+    outline: 2px solid var(--accent-primary);
+    outline-offset: 2px;
+}
+
 .nav-link.active {
     background-color: var(--hover-bg);
     color: var(--accent-primary);
@@ -394,10 +422,12 @@ ul {
     flex-shrink: 0;
 }
 
-/* Sidebar Footer */
+/* Sidebar Footer (always visible at bottom; Hire Me fully shown) */
 .sidebar-footer {
     margin-top: auto;
+    flex-shrink: 0;
     padding-top: var(--spacing-lg);
+    padding-bottom: var(--spacing-sm);
     border-top: 1px solid var(--border-color);
 }
 
@@ -426,18 +456,37 @@ ul {
     color: var(--accent-primary);
 }
 
+/* Theme icons: show moon by default, sun in light theme */
+.theme-icon .moon-icon {
+    display: block;
+}
+
+.theme-icon .sun-icon {
+    display: none;
+}
+
+body.light-theme .theme-icon .moon-icon {
+    display: none;
+}
+
+body.light-theme .theme-icon .sun-icon {
+    display: block;
+}
+
 .hire-btn {
     width: 100%;
+    min-width: 0;
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: var(--spacing-xs);
+    gap: var(--spacing-sm);
     padding: var(--spacing-sm) var(--spacing-md);
     background: var(--gradient-primary);
     color: white;
     font-weight: 600;
     border-radius: var(--radius-md);
     transition: all var(--transition-fast);
+    white-space: nowrap;
 }
 
 .hire-btn:hover {
@@ -445,8 +494,13 @@ ul {
     box-shadow: 0 10px 20px rgba(99, 102, 241, 0.3);
 }
 
+/* Desktop: hide mobile menu button */
+.mobile-menu-toggle {
+    display: none;
+}
+
 /* ====================================
-   Main Content Layout
+   Main Content Layout (margin fixed by sidebar state; no hover shift)
    ==================================== */
 .main-content {
     margin-left: 80px;
@@ -603,6 +657,12 @@ body.light-theme .hero-image img {
     box-shadow: 0 10px 30px rgba(99, 102, 241, 0.4);
 }
 
+.btn-primary:focus-visible,
+.btn-secondary:focus-visible {
+    outline: 2px solid var(--accent-primary);
+    outline-offset: 2px;
+}
+
 .btn-secondary {
     background-color: var(--card-bg);
     color: var(--text-primary);
@@ -618,8 +678,8 @@ body.light-theme .hero-image img {
    Section Common Styles
    ==================================== */
 section {
-    padding: var(--spacing-xl) var(--spacing-xl);
-    max-width: 1400px;
+    padding: var(--section-padding) var(--section-padding);
+    max-width: var(--content-max);
     margin: 0 auto;
 }
 
@@ -793,29 +853,21 @@ section {
 }
 
 /* ====================================
-   Skills Section
+   Technical Skills Section (responsive grid/cards)
    ==================================== */
-.skills-section {
-    margin-top: var(--spacing-xl);
-}
-
-.skills-section h3 {
-    font-size: 1.75rem;
-    font-weight: 600;
-    margin-bottom: var(--spacing-md);
-    text-align: center;
-    color: var(--text-primary);
+.skills-main-section .section-header {
+    margin-bottom: var(--spacing-xl);
 }
 
 .skills-grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     gap: var(--spacing-md);
+    align-items: stretch;
 }
 
-/* Bigger skills when sidebar is collapsed */
+/* Sidebar collapsed: more room for skills */
 .sidebar.collapsed ~ .main-content .skills-grid {
-    grid-template-columns: repeat(3, 1fr);
     gap: var(--spacing-lg);
 }
 
@@ -831,9 +883,7 @@ section {
     font-size: 0.9375rem;
 }
 
-/* Smaller skills when sidebar is open */
 .sidebar:not(.collapsed) ~ .main-content .skills-grid {
-    grid-template-columns: repeat(3, 1fr);
     gap: var(--spacing-sm);
 }
 
@@ -854,12 +904,15 @@ section {
     padding: var(--spacing-md);
     border-radius: var(--radius-lg);
     border: 1px solid var(--border-color);
-    transition: all var(--transition-fast);
+    transition: transform var(--transition-medium), box-shadow var(--transition-medium), border-color var(--transition-fast);
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
 }
 
 .skill-category:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    transform: translateY(-4px);
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.25);
     border-color: var(--accent-primary);
 }
 
@@ -868,12 +921,15 @@ section {
     font-weight: 600;
     margin-bottom: var(--spacing-sm);
     color: var(--accent-primary);
+    flex-shrink: 0;
 }
 
 .skill-category ul {
     display: flex;
     flex-direction: column;
     gap: 0.375rem;
+    flex: 1;
+    min-height: 0;
 }
 
 .skill-category li {
@@ -881,6 +937,9 @@ section {
     padding-left: var(--spacing-sm);
     position: relative;
     font-size: 0.875rem;
+    line-height: 1.5;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
 }
 
 .skill-category li::before {
@@ -1179,6 +1238,13 @@ section {
     transition: all var(--transition-fast);
 }
 
+@media (max-width: 968px) {
+    .form-group input,
+    .form-group textarea {
+        min-height: var(--touch-target);
+    }
+}
+
 .form-group input:focus,
 .form-group textarea:focus {
     outline: none;
@@ -1290,147 +1356,25 @@ section {
 }
 
 /* ====================================
-   Footer
+   Footer (minimal, responsive)
    ==================================== */
 .footer {
     background-color: var(--secondary-bg);
     border-top: 1px solid var(--border-color);
-    padding: var(--spacing-xl) var(--spacing-lg);
-}
-
-.footer-content {
-    display: grid;
-    grid-template-columns: 1.4fr 1fr 1fr 1fr;
-    gap: var(--spacing-lg);
-    max-width: 1400px;
-    margin: 0 auto;
-    padding-bottom: var(--spacing-lg);
-    border-bottom: 1px solid var(--border-color);
-    align-items: start;
-}
-
-.footer h3,
-.footer h4 {
-    margin-bottom: var(--spacing-sm);
-    color: var(--text-primary);
-}
-
-.footer h3 {
-    font-size: 1.5rem;
-    background: var(--gradient-primary);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-}
-
-.footer h4 {
-    font-size: 1rem;
-    font-weight: 600;
-}
-
-.footer-about {
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-start;
-    height: 100%;
-    gap: var(--spacing-sm);
-}
-
-.footer-about p {
-    color: var(--text-secondary);
-    margin-bottom: 0;
-    line-height: 1.6;
-    word-wrap: break-word;
-    overflow-wrap: break-word;
-    max-width: 100%;
-}
-
-.footer-social {
-    display: flex;
-    gap: var(--spacing-sm);
-}
-
-.footer-social a {
-    width: 40px;
-    height: 40px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background-color: var(--card-bg);
-    border-radius: var(--radius-md);
-    border: 1px solid var(--border-color);
-    transition: all var(--transition-fast);
-}
-
-.footer-social a:hover {
-    background: var(--gradient-primary);
-    border-color: transparent;
-    transform: translateY(-2px);
-}
-
-.footer-links,
-.footer-contact,
-.footer-expertise {
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-start;
-}
-
-.footer-nav,
-.footer-contact-list {
-    display: flex;
-    flex-direction: column;
-    gap: var(--spacing-sm);
-}
-
-.footer-tags {
-    display: flex;
-    flex-direction: column;
-    gap: var(--spacing-sm);
-    flex-wrap: wrap;
-}
-
-.footer-nav a,
-.footer-contact-list a {
-    color: var(--text-secondary);
-    font-size: 0.875rem;
-    transition: color var(--transition-fast);
-}
-
-.footer-nav a:hover,
-.footer-contact-list a:hover {
-    color: var(--accent-primary);
-}
-
-.footer-contact-list a {
-    display: flex;
-    align-items: center;
-    gap: var(--spacing-xs);
-    word-break: break-word;
-    overflow-wrap: break-word;
-}
-
-.footer-contact-list svg {
-    flex-shrink: 0;
-}
-
-.footer-tags span {
-    color: var(--text-secondary);
-    font-size: 0.875rem;
-    word-break: break-word;
-    text-align: left;
+    padding: var(--section-padding) var(--spacing-lg);
 }
 
 .footer-bottom {
     text-align: center;
-    padding-top: var(--spacing-lg);
-    max-width: 1400px;
+    max-width: var(--content-max);
     margin: 0 auto;
 }
 
 .footer-bottom p {
     color: var(--text-muted);
-    font-size: 0.875rem;
+    font-size: clamp(0.8125rem, 2vw, 0.875rem);
+    line-height: 1.6;
+    margin: 0;
 }
 
 /* ====================================
@@ -1446,6 +1390,19 @@ section {
     gap: var(--spacing-sm);
 }
 
+@media (max-width: 968px) {
+    #notification-container {
+        top: calc(var(--touch-target) + var(--spacing-md) * 2);
+        left: var(--spacing-md);
+        right: var(--spacing-md);
+        align-items: stretch;
+    }
+
+    #notification-container .notification {
+        min-width: unset;
+    }
+}
+
 .notification {
     padding: var(--spacing-md) var(--spacing-lg);
     background-color: var(--card-bg);
@@ -1455,7 +1412,8 @@ section {
     display: flex;
     align-items: center;
     gap: var(--spacing-sm);
-    min-width: 300px;
+    min-width: 280px;
+    max-width: min(400px, calc(100vw - 2 * var(--spacing-md)));
     animation: slideIn 0.3s ease;
 }
 
@@ -1499,36 +1457,16 @@ section {
 /* ====================================
    Responsive Design
    ==================================== */
-/* Very large screens */
-@media (min-width: 1600px) {
-    .footer-content {
-        max-width: 1600px;
-    }
-}
 
-/* Large tablets and small desktops */
-@media (max-width: 1200px) {
-    .footer-content {
-        grid-template-columns: repeat(2, 1fr);
-        gap: var(--spacing-lg);
-    }
-}
-
-/* Medium tablets */
-@media (max-width: 992px) {
-    .footer-content {
-        grid-template-columns: repeat(2, 1fr);
-        gap: var(--spacing-md);
-    }
-    
-    .footer {
-        padding: var(--spacing-lg) var(--spacing-md);
-    }
-}
-
+/* Tablet / small desktop: show hamburger, hide sidebar off-canvas */
 @media (max-width: 968px) {
     :root {
         --sidebar-width: 0;
+    }
+
+    /* Show hamburger menu button */
+    .mobile-menu-toggle {
+        display: flex !important;
     }
 
     .sidebar {
@@ -1579,17 +1517,10 @@ section {
         grid-template-columns: 1fr;
     }
 
-    /* Technical Skills - 2 columns for tablet view */
+    /* Technical Skills - 2 columns for tablet */
     .skills-grid {
         grid-template-columns: repeat(2, 1fr);
         gap: var(--spacing-md);
-        align-items: start;
-    }
-
-    .skill-category {
-        height: 100%;
-        display: flex;
-        flex-direction: column;
     }
 
     .projects-grid {
@@ -1623,51 +1554,18 @@ section {
         flex-direction: column;
     }
 
-    .hero-buttons button {
+    .hero-buttons .btn-primary,
+    .hero-buttons .btn-secondary {
         width: 100%;
+        min-height: var(--touch-target);
     }
 
     .form-row {
         grid-template-columns: 1fr;
     }
 
-    .info-cards {
-        grid-template-columns: 1fr;
-    }
-
-    .footer-content {
-        grid-template-columns: 1fr;
-        gap: var(--spacing-lg);
-    }
-    
     .footer {
         padding: var(--spacing-lg) var(--spacing-md);
-    }
-    
-    .footer-about {
-        text-align: center;
-    }
-    
-    .footer-social {
-        justify-content: center;
-    }
-    
-    .footer-links,
-    .footer-contact,
-    .footer-expertise {
-        text-align: center;
-    }
-    
-    .footer-contact-list a {
-        justify-content: center;
-    }
-    
-    .footer-tags {
-        align-items: center;
-    }
-    
-    .footer-tags span {
-        text-align: center;
     }
 }
 
@@ -1682,14 +1580,16 @@ section {
         width: 100%;
     }
 
-    /* Mobile Menu Toggle Button */
+    /* Mobile Menu Toggle Button (touch-friendly) */
     .mobile-menu-toggle {
         position: fixed;
         top: var(--spacing-md);
         left: var(--spacing-md);
         z-index: 1001;
-        width: 44px;
-        height: 44px;
+        width: var(--touch-target);
+        height: var(--touch-target);
+        min-width: var(--touch-target);
+        min-height: var(--touch-target);
         display: flex;
         align-items: center;
         justify-content: center;
@@ -1697,7 +1597,7 @@ section {
         border: 1px solid var(--border-color);
         border-radius: var(--radius-md);
         color: var(--text-primary);
-        transition: all var(--transition-fast);
+        transition: background-color var(--transition-fast), border-color var(--transition-fast), color var(--transition-fast);
         box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
     }
 
@@ -1707,6 +1607,11 @@ section {
         color: var(--accent-primary);
     }
 
+    .mobile-menu-toggle:focus-visible {
+        outline: 2px solid var(--accent-primary);
+        outline-offset: 2px;
+    }
+
     .mobile-menu-toggle.active {
         background-color: var(--accent-primary);
         color: white;
@@ -1714,8 +1619,8 @@ section {
     }
 
     .mobile-menu-toggle svg {
-        width: 20px;
-        height: 20px;
+        width: 22px;
+        height: 22px;
     }
 
     /* Sidebar Overlay */
@@ -1750,7 +1655,15 @@ section {
 
     .sidebar-content {
         padding: var(--spacing-md);
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        min-height: 0;
+    }
+
+    .sidebar .nav-menu {
         overflow-y: auto;
+        min-height: 0;
     }
 
     /* Sidebar Header - Mobile */
@@ -1779,7 +1692,7 @@ section {
     #search-input {
         font-size: 0.875rem;
         padding: var(--spacing-sm) var(--spacing-sm) var(--spacing-sm) 2.5rem;
-        min-height: 44px;
+        min-height: var(--touch-target);
     }
 
     /* Navigation Menu - Mobile Organization */
@@ -1792,7 +1705,7 @@ section {
     }
 
     .nav-link {
-        min-height: 48px;
+        min-height: var(--touch-target);
         padding: var(--spacing-sm) var(--spacing-md);
         font-size: 0.9375rem;
         border-radius: var(--radius-md);
@@ -1839,7 +1752,7 @@ section {
     }
 
     .hire-btn {
-        min-height: 48px;
+        min-height: var(--touch-target);
         font-size: 0.9375rem;
         padding: var(--spacing-sm) var(--spacing-md);
     }
@@ -2014,7 +1927,7 @@ section {
     .tool-tag {
         padding: var(--spacing-sm) var(--spacing-md);
         font-size: 0.875rem;
-        min-height: 44px;
+        min-height: var(--touch-target);
         display: inline-flex;
         align-items: center;
         justify-content: center;
@@ -2116,7 +2029,7 @@ section {
 
     .project-btn {
         width: 100%;
-        min-height: 44px;
+        min-height: var(--touch-target);
         padding: var(--spacing-sm) var(--spacing-md);
         font-size: 0.9375rem;
         display: flex;
@@ -2134,7 +2047,6 @@ section {
 }
 
 @media (max-width: 480px) {
-    /* Hero image remains 80vw on all small screens - consistent with 640px breakpoint */
     .hero-image img,
     .sidebar.collapsed ~ .main-content .hero-image img,
     .sidebar:not(.collapsed) ~ .main-content .hero-image img,
@@ -2146,10 +2058,7 @@ section {
         object-fit: contain;
     }
 
-    /* Keep mobile improvements from 640px breakpoint */
-    /* Projects and Skills remain in single-column layout from 640px styles */
-    
-    /* Technical Skills - maintain 2-column layout on very small screens */
+    /* Technical Skills - 2 columns on very small screens */
     .skills-grid {
         grid-template-columns: repeat(2, 1fr);
         gap: var(--spacing-xs);
@@ -2157,14 +2066,13 @@ section {
 
     .skill-category {
         padding: 0.625rem;
-        height: 100%;
     }
-    
+
     .skill-category h4 {
         font-size: 0.8125rem;
         margin-bottom: 0.375rem;
     }
-    
+
     .skill-category li {
         font-size: 0.6875rem;
         line-height: 1.3;
@@ -2187,47 +2095,11 @@ section {
         font-size: 0.8125rem;
         padding: var(--spacing-xs) var(--spacing-sm);
     }
-    
+
     .footer {
         padding: var(--spacing-md) var(--spacing-sm);
     }
-    
-    .footer-content {
-        gap: var(--spacing-md);
-        padding-bottom: var(--spacing-md);
-    }
-    
-    .footer h3 {
-        font-size: 1.25rem;
-    }
-    
-    .footer h4 {
-        font-size: 0.9375rem;
-    }
-    
-    .footer-about p {
-        font-size: 0.875rem;
-    }
-    
-    .footer-social a {
-        width: 36px;
-        height: 36px;
-    }
-    
-    .footer-nav a,
-    .footer-contact-list a,
-    .footer-tags span {
-        font-size: 0.8125rem;
-    }
-    
-    .footer-contact-list a {
-        word-break: break-word;
-    }
-    
-    .footer-bottom {
-        padding-top: var(--spacing-md);
-    }
-    
+
     .footer-bottom p {
         font-size: 0.8125rem;
     }

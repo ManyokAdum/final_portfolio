@@ -1923,7 +1923,7 @@ section {
         height: 16px;
     }
 
-    /* Technical Skills Section - Mobile Improvements */
+    /* Technical Skills Section - Mobile: stacked blocks (Governance-style) */
     .skills-main-section {
         padding: var(--spacing-lg) max(var(--spacing-md), env(safe-area-inset-left));
         padding-right: max(var(--spacing-md), env(safe-area-inset-right));
@@ -1933,7 +1933,7 @@ section {
     }
 
     .skills-main-section .section-header {
-        margin-bottom: var(--spacing-lg);
+        margin-bottom: var(--spacing-xl);
     }
 
     .skills-main-section .section-header h2 {
@@ -1944,51 +1944,74 @@ section {
     .skills-main-section .section-header p {
         font-size: 0.9375rem;
         line-height: 1.6;
+        max-width: 100%;
     }
 
-    /* Technical Skills on phone: single column, one after another, well arranged */
+    /* Stacked vertical layout: clean blocks, title → content, no card treatment */
     .skills-grid {
-        display: grid;
-        grid-template-columns: 1fr;
-        gap: var(--spacing-md);
+        display: flex;
+        flex-direction: column;
+        gap: 0;
         width: 100%;
         min-width: 0;
-        align-items: stretch;
         box-sizing: border-box;
     }
 
     .skill-category {
-        padding: var(--spacing-md);
         width: 100%;
         min-width: 0;
         margin: 0;
+        padding: var(--spacing-lg) 0;
         box-sizing: border-box;
         display: flex;
         flex-direction: column;
-        overflow: hidden;
+        gap: var(--spacing-sm);
+        border-bottom: 1px solid var(--border-color);
+        background: transparent;
+        border-radius: 0;
+        border: none;
+        box-shadow: none;
+        transition: none;
+    }
+
+    .skill-category:last-child {
+        border-bottom: none;
+    }
+
+    /* No hover lift/shadow on mobile */
+    .skill-category:hover {
+        transform: none;
+        box-shadow: none;
+        border-color: transparent;
     }
 
     .skill-category h4 {
-        font-size: 0.9375rem;
-        margin-bottom: var(--spacing-sm);
-        text-align: left;
+        font-size: 1rem;
         font-weight: 600;
+        margin: 0 0 var(--spacing-xs) 0;
+        padding: 0;
+        color: var(--accent-primary);
+        text-align: left;
         min-width: 0;
+        line-height: 1.3;
     }
 
     .skill-category ul {
         display: flex;
         flex-direction: column;
         gap: 0.375rem;
-        align-items: flex-start;
-        flex: 1;
+        margin: 0;
+        padding: 0;
+        list-style: none;
         min-width: 0;
     }
 
     .skill-category li {
-        font-size: 0.8125rem;
-        padding-left: var(--spacing-sm);
+        font-size: 0.875rem;
         line-height: 1.5;
+        color: var(--text-secondary);
+        position: relative;
+        padding-left: 1rem;
         width: 100%;
         max-width: 100%;
         text-align: left;
@@ -1999,7 +2022,11 @@ section {
     }
 
     .skill-category li::before {
+        content: '•';
+        position: absolute;
         left: 0;
+        color: var(--accent-primary);
+        font-size: 0.75rem;
     }
 
     /* Tools & Technologies Subsection - Mobile */
@@ -2159,23 +2186,19 @@ section {
         object-fit: contain;
     }
 
-    /* Technical Skills: keep single column, slightly tighter spacing on very small phones */
-    .skills-grid {
-        gap: var(--spacing-sm);
-    }
-
+    /* Technical Skills: same stacked blocks, thumb-friendly spacing */
     .skill-category {
-        padding: var(--spacing-sm);
+        padding: var(--spacing-md) 0;
     }
 
     .skill-category h4 {
-        font-size: 0.875rem;
+        font-size: 0.9375rem;
         margin-bottom: var(--spacing-xs);
     }
 
     .skill-category li {
         font-size: 0.8125rem;
-        line-height: 1.4;
+        line-height: 1.5;
     }
 
     .project-card img {
@@ -2205,16 +2228,10 @@ section {
     }
 }
 
-/* Very small phones (e.g. iPhone SE 320px, narrow Android): single-column skills */
+/* Very small phones (e.g. iPhone SE 320px): same stacked blocks */
 @media (max-width: 420px) {
-    .skills-grid {
-        grid-template-columns: 1fr;
-        gap: var(--spacing-sm);
-        width: 100%;
-    }
-
     .skill-category {
-        padding: var(--spacing-md);
+        padding: var(--spacing-md) 0;
         width: 100%;
         min-width: 0;
     }

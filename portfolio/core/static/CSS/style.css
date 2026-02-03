@@ -83,6 +83,10 @@ body.light-theme .expertise-card {
 
 html {
     scroll-behavior: smooth;
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+    min-height: 100%;
+    min-height: -webkit-fill-available;
 }
 
 body {
@@ -91,6 +95,9 @@ body {
     color: var(--text-primary);
     line-height: 1.6;
     overflow-x: hidden;
+    -webkit-overflow-scrolling: touch;
+    min-height: 100vh;
+    min-height: -webkit-fill-available;
 }
 
 a {
@@ -109,6 +116,17 @@ button {
     border: none;
     background: none;
     transition: all var(--transition-fast);
+}
+
+@media (hover: none) and (pointer: coarse) {
+    button,
+    a,
+    .nav-link,
+    .project-btn,
+    .tool-tag {
+        -webkit-tap-highlight-color: transparent;
+        touch-action: manipulation;
+    }
 }
 
 img {
@@ -382,6 +400,7 @@ ul {
     flex: 1;
     min-height: 0;
     overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
 }
 
 .nav-menu ul {
@@ -506,6 +525,9 @@ body.light-theme .theme-icon .sun-icon {
     margin-left: 80px;
     min-height: 100vh;
     transition: margin-left var(--transition-medium);
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
 }
 
 .sidebar:not(.collapsed) ~ .main-content {
@@ -542,7 +564,9 @@ body.light-theme .theme-icon .sun-icon {
     gap: var(--spacing-xl);
     max-width: 1200px;
     width: 100%;
+    min-width: 0;
     z-index: 1;
+    box-sizing: border-box;
 }
 
 .hero-image {
@@ -681,6 +705,8 @@ section {
     padding: var(--section-padding) var(--section-padding);
     max-width: var(--content-max);
     margin: 0 auto;
+    width: 100%;
+    box-sizing: border-box;
 }
 
 .section-header {
@@ -717,6 +743,9 @@ section {
     grid-template-columns: 1.5fr 1fr;
     gap: var(--spacing-xl);
     align-items: start;
+    width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
 }
 
 .journey-section h3 {
@@ -864,6 +893,8 @@ section {
     grid-template-columns: repeat(3, 1fr);
     gap: var(--spacing-md);
     align-items: stretch;
+    width: 100%;
+    min-width: 0;
 }
 
 /* Sidebar collapsed: more room for skills */
@@ -940,6 +971,8 @@ section {
     line-height: 1.5;
     word-wrap: break-word;
     overflow-wrap: break-word;
+    word-break: break-word;
+    max-width: 100%;
 }
 
 .skill-category li::before {
@@ -993,6 +1026,9 @@ section {
     margin-top: var(--spacing-xl);
     padding-top: var(--spacing-lg);
     border-top: 1px solid var(--border-color);
+    width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
 }
 
 .tools-subsection h3 {
@@ -1159,6 +1195,9 @@ section {
     display: grid;
     grid-template-columns: 1.5fr 1fr;
     gap: var(--spacing-xl);
+    width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
 }
 
 .contact-form-container,
@@ -1392,9 +1431,9 @@ section {
 
 @media (max-width: 968px) {
     #notification-container {
-        top: calc(var(--touch-target) + var(--spacing-md) * 2);
-        left: var(--spacing-md);
-        right: var(--spacing-md);
+        top: calc(var(--touch-target) + var(--spacing-md) * 2 + env(safe-area-inset-top, 0));
+        left: max(var(--spacing-md), env(safe-area-inset-left));
+        right: max(var(--spacing-md), env(safe-area-inset-right));
         align-items: stretch;
     }
 
@@ -1580,11 +1619,22 @@ section {
         width: 100%;
     }
 
-    /* Mobile Menu Toggle Button (touch-friendly) */
+    /* Safe-area insets for notched devices (iOS/Android) */
+    .main-content {
+        padding-left: env(safe-area-inset-left, 0);
+        padding-right: env(safe-area-inset-right, 0);
+    }
+
+    section {
+        padding-left: max(var(--section-padding), env(safe-area-inset-left));
+        padding-right: max(var(--section-padding), env(safe-area-inset-right));
+    }
+
+    /* Mobile Menu Toggle Button (touch-friendly, clear of notch) */
     .mobile-menu-toggle {
         position: fixed;
-        top: var(--spacing-md);
-        left: var(--spacing-md);
+        top: max(var(--spacing-md), env(safe-area-inset-top));
+        left: max(var(--spacing-md), env(safe-area-inset-left));
         z-index: 1001;
         width: var(--touch-target);
         height: var(--touch-target);
@@ -1837,7 +1887,11 @@ section {
 
     /* Technical Skills Section - Mobile Improvements */
     .skills-main-section {
-        padding: var(--spacing-lg) var(--spacing-md);
+        padding: var(--spacing-lg) max(var(--spacing-md), env(safe-area-inset-left));
+        padding-right: max(var(--spacing-md), env(safe-area-inset-right));
+        overflow-x: hidden;
+        width: 100%;
+        box-sizing: border-box;
     }
 
     .skills-main-section .section-header {
@@ -1854,23 +1908,26 @@ section {
         line-height: 1.6;
     }
 
-    /* Two-column grid for Technical Skills - Mobile & Tablet */
+    /* Two-column grid for Technical Skills on phones (640px and below) */
     .skills-grid {
         display: grid;
         grid-template-columns: repeat(2, 1fr);
         gap: var(--spacing-sm);
         width: 100%;
+        min-width: 0;
         align-items: start;
+        box-sizing: border-box;
     }
 
     .skill-category {
         padding: var(--spacing-sm);
         width: 100%;
-        height: 100%;
+        min-width: 0;
         margin: 0;
         box-sizing: border-box;
         display: flex;
         flex-direction: column;
+        overflow: hidden;
     }
 
     .skill-category h4 {
@@ -1878,6 +1935,7 @@ section {
         margin-bottom: var(--spacing-xs);
         text-align: left;
         font-weight: 600;
+        min-width: 0;
     }
 
     .skill-category ul {
@@ -1886,6 +1944,7 @@ section {
         gap: 0.3rem;
         align-items: flex-start;
         flex: 1;
+        min-width: 0;
     }
 
     .skill-category li {
@@ -1893,8 +1952,12 @@ section {
         padding-left: var(--spacing-sm);
         line-height: 1.4;
         width: 100%;
+        max-width: 100%;
         text-align: left;
         word-wrap: break-word;
+        overflow-wrap: break-word;
+        word-break: break-word;
+        box-sizing: border-box;
     }
 
     .skill-category li::before {
@@ -2058,7 +2121,7 @@ section {
         object-fit: contain;
     }
 
-    /* Technical Skills - 2 columns on very small screens */
+    /* Technical Skills - 2 columns on small phones (421px–480px) */
     .skills-grid {
         grid-template-columns: repeat(2, 1fr);
         gap: var(--spacing-xs);
@@ -2102,6 +2165,40 @@ section {
 
     .footer-bottom p {
         font-size: 0.8125rem;
+    }
+}
+
+/* Very small phones (e.g. iPhone SE 320px, narrow Android): single-column skills */
+@media (max-width: 420px) {
+    .skills-grid {
+        grid-template-columns: 1fr;
+        gap: var(--spacing-sm);
+        width: 100%;
+    }
+
+    .skill-category {
+        padding: var(--spacing-md);
+        width: 100%;
+        min-width: 0;
+    }
+
+    .skill-category h4 {
+        font-size: 0.9375rem;
+        margin-bottom: var(--spacing-xs);
+    }
+
+    .skill-category li {
+        font-size: 0.8125rem;
+        line-height: 1.5;
+    }
+
+    .tools-tags {
+        justify-content: flex-start;
+    }
+
+    .tool-tag {
+        font-size: 0.8125rem;
+        padding: var(--spacing-xs) var(--spacing-sm);
     }
 }
 

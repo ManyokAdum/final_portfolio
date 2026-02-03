@@ -144,6 +144,11 @@ document.querySelectorAll('.nav-link').forEach(link => {
     });
 });
 
+// Close sidebar when clicking Hire Me on mobile (scroll goes to send-message)
+document.querySelector('.hire-btn')?.addEventListener('click', () => {
+    if (window.innerWidth <= 968) closeMobileSidebar();
+});
+
 // ====================================
 // Theme Toggle
 // ====================================

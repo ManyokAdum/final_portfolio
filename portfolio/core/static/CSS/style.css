@@ -1508,12 +1508,50 @@ section {
         display: flex !important;
     }
 
-    .sidebar {
+    .sidebar,
+    .sidebar.collapsed {
+        width: var(--sidebar-width);
         transform: translateX(-100%);
     }
 
     .sidebar.active {
         transform: translateX(0);
+    }
+
+    /* On phone/small screen: show full menu with names (override collapsed icon-only state) */
+    .sidebar .nav-link span {
+        display: inline !important;
+    }
+
+    .sidebar .nav-link {
+        justify-content: flex-start;
+    }
+
+    .sidebar .logo-btn {
+        display: block !important;
+    }
+
+    .sidebar .search-container {
+        display: block !important;
+    }
+
+    .sidebar .theme-label {
+        display: block !important;
+    }
+
+    .sidebar .theme-switcher {
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-between;
+    }
+
+    .sidebar .hire-btn span {
+        display: inline !important;
+    }
+
+    .sidebar .hire-btn {
+        justify-content: center;
+        gap: var(--spacing-xs);
     }
 
     .main-content {
@@ -1908,19 +1946,19 @@ section {
         line-height: 1.6;
     }
 
-    /* Two-column grid for Technical Skills on phones (640px and below) */
+    /* Technical Skills on phone: single column, one after another, well arranged */
     .skills-grid {
         display: grid;
-        grid-template-columns: repeat(2, 1fr);
-        gap: var(--spacing-sm);
+        grid-template-columns: 1fr;
+        gap: var(--spacing-md);
         width: 100%;
         min-width: 0;
-        align-items: start;
+        align-items: stretch;
         box-sizing: border-box;
     }
 
     .skill-category {
-        padding: var(--spacing-sm);
+        padding: var(--spacing-md);
         width: 100%;
         min-width: 0;
         margin: 0;
@@ -1931,8 +1969,8 @@ section {
     }
 
     .skill-category h4 {
-        font-size: 0.875rem;
-        margin-bottom: var(--spacing-xs);
+        font-size: 0.9375rem;
+        margin-bottom: var(--spacing-sm);
         text-align: left;
         font-weight: 600;
         min-width: 0;
@@ -1941,16 +1979,16 @@ section {
     .skill-category ul {
         display: flex;
         flex-direction: column;
-        gap: 0.3rem;
+        gap: 0.375rem;
         align-items: flex-start;
         flex: 1;
         min-width: 0;
     }
 
     .skill-category li {
-        font-size: 0.75rem;
+        font-size: 0.8125rem;
         padding-left: var(--spacing-sm);
-        line-height: 1.4;
+        line-height: 1.5;
         width: 100%;
         max-width: 100%;
         text-align: left;
@@ -2121,24 +2159,23 @@ section {
         object-fit: contain;
     }
 
-    /* Technical Skills - 2 columns on small phones (421px–480px) */
+    /* Technical Skills: keep single column, slightly tighter spacing on very small phones */
     .skills-grid {
-        grid-template-columns: repeat(2, 1fr);
-        gap: var(--spacing-xs);
+        gap: var(--spacing-sm);
     }
 
     .skill-category {
-        padding: 0.625rem;
+        padding: var(--spacing-sm);
     }
 
     .skill-category h4 {
-        font-size: 0.8125rem;
-        margin-bottom: 0.375rem;
+        font-size: 0.875rem;
+        margin-bottom: var(--spacing-xs);
     }
 
     .skill-category li {
-        font-size: 0.6875rem;
-        line-height: 1.3;
+        font-size: 0.8125rem;
+        line-height: 1.4;
     }
 
     .project-card img {
